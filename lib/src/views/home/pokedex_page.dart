@@ -1,115 +1,41 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:pokedex/src/models/pokemon.dart';
 import 'package:pokedex/src/services/pokemon_service.dart';
 import 'package:pokedex/src/theme/constants.dart';
-import 'package:pokedex/src/widgets/components/hamburger_menu_button.dart';
-import 'package:pokedex/src/widgets/components/pokemon_item.dart';
-import 'package:pokedex/src/widgets/components/pokenix_navigation_drawer.dart';
+import 'package:pokedex/src/widgets/components/general/hamburger_menu_button.dart';
+import 'package:pokedex/src/widgets/components/pokedex/pokemon_list.dart';
+import 'package:pokedex/src/widgets/components/general/pokenix_navigation_drawer.dart';
 import 'package:provider/provider.dart';
 
 class HomePage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      drawer: ClientNavigationDrawer(),
-        body: CustomScrollView(
-      physics: BouncingScrollPhysics(),
-      slivers: [
-        SliverPersistentHeader(
-          delegate: _PokeNixHeader(),
-          pinned: true,
-        ),
-        PokemonList()
-      ],
-    ));
-  }
-}
-
-class PokemonList extends StatefulWidget {
-  const PokemonList({
-    Key key,
-  }) : super(key: key);
-
-  @override
-  _PokemonListState createState() => _PokemonListState();
-}
-
-class _PokemonListState extends State<PokemonList> {
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
-      final pokemonService =
-          Provider.of<PokemonService>(context, listen: false);
-      await pokemonService.getPokemonData();
-    });
-  }
+  final scrollController = new ScrollController();
 
   @override
   Widget build(BuildContext context) {
     final pokemonService = Provider.of<PokemonService>(context);
 
-    return SliverToBoxAdapter(
-      child: Container(
-        child: pokemonService.isLoading
-            ? Center(
-                child: CircularProgressIndicator(
-                  strokeWidth: 2.5,
-                ),
-              )
-            : PokemonListView(
-                pokemonService: pokemonService,
-              ),
-      ),
-    );
-  }
-}
+    scrollController.addListener(() {
+      if (scrollController.position.pixels >=
+              scrollController.position.maxScrollExtent - 200 &&
+          !pokemonService.isLoading) {
+        pokemonService.getPokemonData();
+        print('Gettin new pokemon');
+        }
+    });
 
-class PokemonListView extends StatefulWidget {
-  const PokemonListView({
-    Key key,
-    this.pokemonService,
-  }) : super(key: key);
-
-  final PokemonService pokemonService;
-
-  @override
-  _PokemonListViewState createState() => _PokemonListViewState();
-}
-
-class _PokemonListViewState extends State<PokemonListView> {
-  final ScrollController scrollController = ScrollController();
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    scrollController?.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final List<Pokemon> pokemonItems = widget.pokemonService.pokemon;
-
-    return widget.pokemonService.pokemon.isNotEmpty
-        ? ListView.builder(
-            physics: BouncingScrollPhysics(),
-            shrinkWrap: true,
-            itemCount: pokemonItems.length,
-            itemBuilder: (BuildContext context, int index) {
-              return PokemonItem(
-                pokemon: pokemonItems[index],
-              );
-            },
-          )
-        : Center(
-            child: Text('A wild Snorlax blocks our path, no pokemon around'),
-          );
+    return Scaffold(
+        drawer: ClientNavigationDrawer(),
+        body: CustomScrollView(
+          controller: scrollController,
+          physics: BouncingScrollPhysics(),
+          slivers: [
+            SliverPersistentHeader(
+              delegate: _PokeNixHeader(),
+              pinned: true,
+            ),
+            PokemonList()
+          ],
+        ));
   }
 }
 
@@ -131,7 +57,7 @@ class _PokeNixHeader extends SliverPersistentHeaderDelegate {
     final titleTopMargin = (titleMaxTopMargin * (1 - (percent * 2)))
         .clamp(titleMinTopMargin, titleMaxTopMargin);
 
-    final titleLeftMargin = (titleMaxLeftMargin * ( percent * 2.4 ))
+    final titleLeftMargin = (titleMaxLeftMargin * (percent * 2.4))
         .clamp(titleMinLeftMargin, titleMaxLeftMargin);
 
     return Container(
@@ -192,21 +118,19 @@ class _PokeNixHeader extends SliverPersistentHeaderDelegate {
                   'Pokédex',
                   style: pokeNixApplicationTitleTextStyle,
                 ),
-              )
-          ),
+              )),
           Positioned(
               top: titleTopMargin + 40,
               left: 20,
               right: 20,
               child: SafeArea(
                 child: Opacity(
-                  opacity: (1 - (percent * 3.0)).clamp(0.0, 1),
-                  child: Text(
-                    'Search for Pokémon by name or using the National Pokédex number.',
-                    style: pokeNixDescriptionTextStlye,
-                  )),
-              )
-          ),
+                    opacity: (1 - (percent * 3.0)).clamp(0.0, 1),
+                    child: Text(
+                      'Search for Pokémon by name or using the National Pokédex number.',
+                      style: pokeNixDescriptionTextStlye,
+                    )),
+              )),
           Positioned(
             bottom: 10,
             left: 20,
@@ -250,5 +174,3 @@ class _PokeNixHeader extends SliverPersistentHeaderDelegate {
   bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) =>
       false;
 }
-
-

@@ -17,6 +17,10 @@ const Color pokeNixWeightLight = Color(0xff99CD7C);
 const Color pokeNixWeightNormal = Color(0xff57B2DC);
 const Color pokeNixWeightHeavy = Color(0xff5A92A5);
 
+
+const Color pokeNixShimmerBaseColor = Color(0xffF2F2F2);
+const Color pokeNixShimmerHighlightColor = Color(0xffFAFAFA);
+
 const Color pokeNixPrimaryButtonColor = Color(0xffEA5D60);
 const Color pokeNixSecondaryButtonColor = pokeNixBackgroundDefaultInput;
 

@@ -1,9 +1,11 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pokedex/src/helpers/helpers.dart';
 import 'package:pokedex/src/models/pokemon.dart';
 import 'package:pokedex/src/theme/constants.dart';
 import 'package:intl/intl.dart';
+import 'package:shimmer/shimmer.dart';
 
 class PokemonItem extends StatelessWidget {
   const PokemonItem({
@@ -112,11 +114,16 @@ class PokemonItem extends StatelessWidget {
           Positioned(
               right: 10,
               top: 0,
-              child: FadeInImage(
-                placeholder: AssetImage('assets/images/gif/loading.gif'),
-                image: NetworkImage(
-                  '${pokemon.sprites.other.officialArtwork.frontDefault}',
-                ),
+              child: CachedNetworkImage(
+                key: UniqueKey(),
+                imageUrl: '${pokemon.sprites.other.officialArtwork.frontDefault}',
+                placeholder: ( _, __ ) {
+                  return Shimmer.fromColors(
+                    baseColor: pokeNixShimmerBaseColor,
+                    highlightColor: pokeNixShimmerHighlightColor,
+                    child: Image.asset('assets/images/png/25.png'),
+                  );
+                },
                 height: size.height * 0.20,
                 fit: BoxFit.cover,
               )
