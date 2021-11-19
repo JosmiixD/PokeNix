@@ -19,6 +19,7 @@ class PokemonShimmerList extends StatelessWidget {
       shrinkWrap: true,
       itemBuilder: (BuildContext context, int index) {
         return FadeIn(
+          delay: Duration( milliseconds: ( index * 2 ) * 100 ),
           child: Shimmer.fromColors(
             baseColor: pokeNixShimmerBaseColor,
             highlightColor: pokeNixShimmerHighlightColor,
