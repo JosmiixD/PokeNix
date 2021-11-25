@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:pokedex/src/env/environment.dart';
 import 'package:pokedex/src/models/pokemon.dart';
+import 'package:pokedex/src/models/pokemon_species_info.dart';
 
 class PokemonService with ChangeNotifier {
 
@@ -17,12 +18,6 @@ class PokemonService with ChangeNotifier {
     this._isLoading = value;
     notifyListeners();
   }
-
-  // List<Pokemon> get pokemon => this._pokemon;
-  // set pokemon( List<Pokemon> value ) {
-  //   this._pokemon = value;
-  //   notifyListeners();
-  // }
 
 
   Future<dynamic> getPokemonData() async {
@@ -42,6 +37,25 @@ class PokemonService with ChangeNotifier {
 
     this.pokemon.addAll(pokemonList);
     this.isLoading = false;
+
+  }
+
+  Future<dynamic> getPokemonSpeciesData( int id ) async {
+
+    this.isLoading = true;
+
+    try {
+
+      final response = await Dio().get('${Environment.pokeApiUrl}/pokemon-species/$id');
+      final PokemonSpeciesInfo pokemonSpeciesInfo = pokemonSpeciesInfoFromJson( jsonEncode(response.data) );
+
+      this.isLoading = false;
+
+      return pokemonSpeciesInfo;
+    } catch (e) {
+      this.isLoading = false;
+      return [];
+    }
 
   }
 
