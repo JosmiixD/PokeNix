@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:pokedex/src/helpers/helpers.dart';
 import 'package:pokedex/src/models/pokemon.dart';
 import 'package:pokedex/src/models/pokemon_species_info.dart';
@@ -44,7 +46,6 @@ class _PokemonDetailsTabBarState extends State<PokemonDetailsTabBar>
     with SingleTickerProviderStateMixin {
   TabController tabController;
   int currentTabIndex = 1;
-  var pokemonSpeciesInfo = new PokemonSpeciesInfo();
 
   @override
   void initState() {
@@ -53,11 +54,7 @@ class _PokemonDetailsTabBarState extends State<PokemonDetailsTabBar>
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
       final pokemonService =
           Provider.of<PokemonService>(context, listen: false);
-
-      pokemonSpeciesInfo =
-          await pokemonService.getPokemonSpeciesData(widget.pokemon.id);
-      setState(() {});
-      print('get');
+      await pokemonService.getPokemonSpeciesData(widget.pokemon.id);
     });
   }
 
@@ -69,8 +66,9 @@ class _PokemonDetailsTabBarState extends State<PokemonDetailsTabBar>
 
   @override
   Widget build(BuildContext context) {
-    final Radius backgroundRadius = Radius.circular(30);
+    final Radius backgroundRadius = Radius.circular(5);
     final Pokemon pokemon = widget.pokemon;
+    final pokemonService = Provider.of<PokemonService>(context);
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -82,7 +80,7 @@ class _PokemonDetailsTabBarState extends State<PokemonDetailsTabBar>
           unselectedLabelStyle: pokeNixDescriptionTextStlye,
           tabs: [
             Text('About'),
-            Text('Status'),
+            Text('Stats'),
             Text('Evolution'),
           ],
         ),
@@ -95,20 +93,23 @@ class _PokemonDetailsTabBarState extends State<PokemonDetailsTabBar>
                 borderRadius: BorderRadius.only(
                     topLeft: backgroundRadius, topRight: backgroundRadius),
                 color: Colors.white),
-            child: TabBarView(
-              physics: BouncingScrollPhysics(),
-              controller: tabController,
-              children: [
-                AboutPokemonPage(
-                    pokemon: pokemon, pokemonSpeciesInfo: pokemonSpeciesInfo),
-                Container(
-                  child: Text('Segundo Tab'),
-                ),
-                Container(
-                  child: Text('Terceri Tab'),
-                ),
-              ],
-            ),
+            child: (pokemonService.isLoading &&
+                    pokemonService.pokemonSpeciesInfo !=
+                        new PokemonSpeciesInfo())
+                ? Center(
+                    child: CircularProgressIndicator(),
+                  )
+                : TabBarView(
+                    physics: BouncingScrollPhysics(),
+                    controller: tabController,
+                    children: [
+                      AboutPokemonPage(pokemon: pokemon),
+                      StatsPokemonPage(pokemon: pokemon),
+                      Container(
+                        child: Text('Terceri Tab'),
+                      ),
+                    ],
+                  ),
           ),
         )
       ],
@@ -116,22 +117,129 @@ class _PokemonDetailsTabBarState extends State<PokemonDetailsTabBar>
   }
 }
 
-class AboutPokemonPage extends StatelessWidget {
-  const AboutPokemonPage(
-      {Key key, @required this.pokemon, @required this.pokemonSpeciesInfo})
-      : super(key: key);
+class StatsPokemonPage extends StatelessWidget {
+  final Pokemon pokemon;
+
+  const StatsPokemonPage({Key key, @required this.pokemon}) : super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    final pokemonService = Provider.of<PokemonService>(context);
+    PokemonSpeciesInfo pokemonSpeciesInfo = pokemonService.pokemonSpeciesInfo;
+
+    return !pokemonService.isLoading
+        ? Container(
+            padding: EdgeInsets.symmetric(horizontal: 30),
+            child: SingleChildScrollView(
+              physics: BouncingScrollPhysics(),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Text(
+                    'Base Stats',
+                    style: pokeNixFilterTitleTextStyle.copyWith(
+                        color: getPokemonTypeColor(pokemon.types[0].type.name)),
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  PokemonStatItem(pokemon: pokemon),
+                ],
+              ),
+            ),
+          )
+        : Container();
+  }
+}
+
+class PokemonStatItem extends StatelessWidget {
+  const PokemonStatItem({
+    Key key,
+    @required this.pokemon,
+    this.label,
+    this.baseStat,
+    this.percent,
+    this.minStat,
+    this.maxStat,
+  }) : super(key: key);
 
   final Pokemon pokemon;
-  final PokemonSpeciesInfo pokemonSpeciesInfo;
+  final String label;
+  final String baseStat;
+  final double percent;
+  final String minStat;
+  final String maxStat;
+
 
   @override
   Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 20),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Container(
+            width: MediaQuery.of(context).size.width * 0.15,
+            child: Text('HP', style: pokeNixPokemonTypeTextStlye),
+          ),
+          Container(
+            width: MediaQuery.of(context).size.width * 0.10,
+            child: Text(
+              '45',
+              style:
+                  pokeNixDescriptionTextStlye.copyWith(color: pokeNixTextGrey),
+            ),
+          ),
+          Container(
+            width: MediaQuery.of(context).size.width * 0.35,
+            height: 10,
+            child: LinearPercentIndicator(
+              progressColor: getPokemonTypeColor(pokemon.types[0].type.name),
+              backgroundColor: pokeNixBackgroundDefaultInput,
+              percent: 0.6,
+              animation: true,
 
+            ),
+          ),
+          Container(
+            width: MediaQuery.of(context).size.width * 0.10,
+            child: Text(
+              '200',
+              style:
+                  pokeNixDescriptionTextStlye.copyWith(color: pokeNixTextGrey),
+              textAlign: TextAlign.right,
+            ),
+          ),
+          Container(
+            width: MediaQuery.of(context).size.width * 0.10,
+            child: Text(
+              '294',
+              style:
+                  pokeNixDescriptionTextStlye.copyWith(color: pokeNixTextGrey),
+              textAlign: TextAlign.right
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class AboutPokemonPage extends StatelessWidget {
+  const AboutPokemonPage({Key key, @required this.pokemon}) : super(key: key);
+
+  final Pokemon pokemon;
+
+  @override
+  Widget build(BuildContext context) {
     final pokemonService = Provider.of<PokemonService>(context);
     String pokemonDescription = '';
-    
-    if( !pokemonService.isLoading && pokemonSpeciesInfo != null ) {
-        final pokemonFlavorTextEntry =
+    PokemonSpeciesInfo pokemonSpeciesInfo = pokemonService.pokemonSpeciesInfo;
+
+    if (!pokemonService.isLoading && pokemonSpeciesInfo != null) {
+      final pokemonFlavorTextEntry =
           pokemonSpeciesInfo.flavorTextEntries.firstWhere((flavorText) {
         if (flavorText.language.name == 'en' &&
             flavorText.version.name == 'ruby') {
@@ -141,54 +249,170 @@ class AboutPokemonPage extends StatelessWidget {
         }
       });
 
-      pokemonDescription = pokemonFlavorTextEntry.flavorText.replaceAll("\n", " ").replaceAll("\f", " ");
-
+      pokemonDescription = pokemonFlavorTextEntry.flavorText
+          .replaceAll("\n", " ")
+          .replaceAll("\f", " ");
     }
-    
-    return !pokemonService.isLoading 
-      ? Container(
-        padding: EdgeInsets.symmetric(horizontal: 30),
-        child: SingleChildScrollView(
-          physics: BouncingScrollPhysics(),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(
-                height: 40,
+
+    return !pokemonService.isLoading
+        ? Scrollbar(
+            radius: Radius.circular(20),
+            thickness: 6.0,
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 30),
+              child: SingleChildScrollView(
+                physics: BouncingScrollPhysics(),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      height: 20,
+                    ),
+                    Text(
+                      '$pokemonDescription',
+                      style: pokeNixDescriptionTextStlye.copyWith(
+                        color: pokeNixTextGrey,
+                      ),
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    Text(
+                      'Pokédex Data',
+                      style: pokeNixFilterTitleTextStyle.copyWith(
+                          color:
+                              getPokemonTypeColor(pokemon.types[0].type.name)),
+                    ),
+                    SizedBox(
+                      height: 30,
+                    ),
+                    PokemoLabelInfo(
+                      label: 'Species',
+                      description: '${pokemonSpeciesInfo.genera[7].genus}',
+                    ),
+                    PokemoLabelInfo(
+                      label: 'Height',
+                      description: '${pokemon.height / 10} m.',
+                    ),
+                    PokemoLabelInfo(
+                      label: 'Height',
+                      description: '${pokemon.height / 10} m.',
+                    ),
+                    Row(
+                      children: [
+                        Container(
+                          width: MediaQuery.of(context).size.width * 0.30,
+                          child: Text('Abilities',
+                              style: pokeNixPokemonTypeTextStlye),
+                        ),
+                        Container(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: List.generate(pokemon.abilities.length,
+                                (index) {
+                              final Ability ability = pokemon.abilities[index];
+                              return Text(
+                                ' ${!ability.isHidden ? index + 1 : ''} ${toBeginningOfSentenceCase(ability.ability.name)} ${ability.isHidden ? '(hidden ability)' : ''}',
+                                style: ability.isHidden
+                                    ? pokeNixPokemonTypeTextStlye.copyWith(
+                                        color: pokeNixTextGrey)
+                                    : pokeNixDescriptionTextStlye.copyWith(
+                                        color: pokeNixTextGrey),
+                              );
+                            }),
+                          ),
+                        )
+                      ],
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    Text(
+                      'Training',
+                      style: pokeNixFilterTitleTextStyle.copyWith(
+                          color:
+                              getPokemonTypeColor(pokemon.types[0].type.name)),
+                    ),
+                    SizedBox(
+                      height: 30,
+                    ),
+                    PokemoLabelInfo(
+                      label: 'Catch Rate',
+                      description:
+                          '${pokemonSpeciesInfo.captureRate} ${getCatchRate(pokemonSpeciesInfo.captureRate)}',
+                    ),
+                    PokemoLabelInfo(
+                      label: 'Base Friendship',
+                      description: '${pokemonSpeciesInfo.baseHappiness}',
+                    ),
+                    PokemoLabelInfo(
+                      label: 'Base Exp',
+                      description: '${pokemon.baseExperience}',
+                    ),
+                    PokemoLabelInfo(
+                      label: 'Growth Rate',
+                      description:
+                          '${getGrowthRate(pokemonSpeciesInfo.growthRate.name)}',
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    Text(
+                      'Breeding',
+                      style: pokeNixFilterTitleTextStyle.copyWith(
+                          color:
+                              getPokemonTypeColor(pokemon.types[0].type.name)),
+                    ),
+                    SizedBox(
+                      height: 30,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 20),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: MediaQuery.of(context).size.width * 0.30,
+                            child: Text('Gender',
+                                style: pokeNixPokemonTypeTextStlye),
+                          ),
+                          Container(
+                              child: (pokemonSpeciesInfo.genderRate == -1)
+                                  ? Text('No gender')
+                                  : Row(
+                                      children: getGenderRate(
+                                              pokemonSpeciesInfo.genderRate)
+                                          .split(',')
+                                          .asMap()
+                                          .entries
+                                          .map((entry) {
+                                      return Text(
+                                        '${entry.value}  ',
+                                        style: pokeNixDescriptionTextStlye
+                                            .copyWith(
+                                                color: entry.key == 0
+                                                    ? pokeNixTypeFlyingColor
+                                                    : pokeNixTypeFairyColor),
+                                      );
+                                    }).toList()))
+                        ],
+                      ),
+                    ),
+                    PokemoLabelInfo(
+                      label: 'Base Exp',
+                      description: getEggGroups(pokemonSpeciesInfo.eggGroups),
+                    ),
+                  ],
+                ),
               ),
-              Text('$pokemonDescription', style: pokeNixDescriptionTextStlye.copyWith( color: pokeNixTextGrey,),),
-              SizedBox(
-                height: 20,
+            ),
+          )
+        : Expanded(
+            child: Center(
+              child: CircularProgressIndicator(
+                strokeWidth: 1,
               ),
-              Text(
-                'Pokédex Data',
-                style: pokeNixFilterTitleTextStyle.copyWith(
-                    color: getPokemonTypeColor(pokemon.types[0].type.name)),
-              ),
-              SizedBox(
-                height: 30,
-              ),
-              PokemoLabelInfo(
-                label: 'Species',
-                description: '${pokemonSpeciesInfo.genera[7].genus}',
-              ),
-              PokemoLabelInfo(
-                label: 'Height',
-                description: '${pokemon.height / 10} m.',
-              ),
-              PokemoLabelInfo(
-                label: 'Height',
-                description: '${pokemon.height / 10} m.',
-              ),
-            ],
-          ),
-        ),
-      )
-      : Expanded(
-        child: Center(
-          child: CircularProgressIndicator( strokeWidth: 1,),
-        ),
-      );
+            ),
+          );
   }
 }
 

@@ -12,10 +12,18 @@ class PokemonService with ChangeNotifier {
 
   String nextPokemon = '';
   List<Pokemon> pokemon = [];  
+  PokemonSpeciesInfo _pokemonSpeciesInfo = new PokemonSpeciesInfo();
 
   bool get isLoading => this._isLoading;
   set isLoading( bool value ) {
     this._isLoading = value;
+    notifyListeners();
+  }
+
+  PokemonSpeciesInfo get pokemonSpeciesInfo => this._pokemonSpeciesInfo;
+
+  set pokemonSpeciesInfo( PokemonSpeciesInfo info ) {
+    this._pokemonSpeciesInfo = info;
     notifyListeners();
   }
 
@@ -50,11 +58,11 @@ class PokemonService with ChangeNotifier {
       final PokemonSpeciesInfo pokemonSpeciesInfo = pokemonSpeciesInfoFromJson( jsonEncode(response.data) );
 
       this.isLoading = false;
+      this.pokemonSpeciesInfo = pokemonSpeciesInfo;
 
-      return pokemonSpeciesInfo;
     } catch (e) {
       this.isLoading = false;
-      return [];
+      this.pokemonSpeciesInfo = new PokemonSpeciesInfo();
     }
 
   }

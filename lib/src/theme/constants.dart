@@ -32,7 +32,7 @@ const TextStyle pokeNixPokemonNameTextStyle = TextStyle( fontWeight: FontWeight.
 const TextStyle pokeNixFilterTitleTextStyle = TextStyle( fontWeight: FontWeight.w700, fontSize: 16 );
 const TextStyle pokeNixDescriptionTextStlye = TextStyle( fontWeight: FontWeight.w400, fontSize: 16 );
 const TextStyle pokeNixPokemonNumberTextStlye = TextStyle( fontWeight: FontWeight.w700, fontSize: 14,);
-const TextStyle pokeNixPokemonTypeTextStlye = TextStyle( fontWeight: FontWeight.w500, fontSize: 16 );
+const TextStyle pokeNixPokemonTypeTextStlye = TextStyle( fontWeight: FontWeight.w500, fontSize: 14 );
 
 
 // BEGIN::Types Colors
