@@ -60,6 +60,7 @@ flutter:
     - assets/images/svg/heights/
     - assets/images/svg/icons/
     - assets/images/svg/patterns/
+    - assets/images/svg/pokemon/
     - assets/images/svg/types/
     - assets/images/svg/weights/
     - assets/images/svg/generations/1/

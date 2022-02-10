@@ -16,7 +16,6 @@ class PokemonDetailsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
 
     return Scaffold(
         backgroundColor:
@@ -145,7 +144,13 @@ class StatsPokemonPage extends StatelessWidget {
                   SizedBox(
                     height: 20,
                   ),
-                  PokemonStatItem(pokemon: pokemon),
+                  ...List.generate(pokemon.stats.length, (index) {
+                    return PokemonStatItem(
+                      stat: pokemon.stats[index],
+                      pokemonType: pokemon.types[0].type.name,
+                      index: index,
+                    );
+                  }),
                 ],
               ),
             ),
@@ -157,21 +162,14 @@ class StatsPokemonPage extends StatelessWidget {
 class PokemonStatItem extends StatelessWidget {
   const PokemonStatItem({
     Key key,
-    @required this.pokemon,
-    this.label,
-    this.baseStat,
-    this.percent,
-    this.minStat,
-    this.maxStat,
+    @required this.pokemonType,
+    @required this.stat,
+    this.index
   }) : super(key: key);
 
-  final Pokemon pokemon;
-  final String label;
-  final String baseStat;
-  final double percent;
-  final String minStat;
-  final String maxStat;
-
+  final String pokemonType;
+  final Stat stat;
+  final int index;
 
   @override
   Widget build(BuildContext context) {
@@ -182,44 +180,32 @@ class PokemonStatItem extends StatelessWidget {
         children: [
           Container(
             width: MediaQuery.of(context).size.width * 0.15,
-            child: Text('HP', style: pokeNixPokemonTypeTextStlye),
+            child: Text( pokemonStatNameFormated( index ), style: pokeNixPokemonTypeTextStlye),
           ),
           Container(
             width: MediaQuery.of(context).size.width * 0.10,
             child: Text(
-              '45',
+              stat.baseStat.toString(),
               style:
                   pokeNixDescriptionTextStlye.copyWith(color: pokeNixTextGrey),
             ),
           ),
           Container(
-            width: MediaQuery.of(context).size.width * 0.35,
+            width: MediaQuery.of(context).size.width * 0.45,
             height: 10,
             child: LinearPercentIndicator(
-              progressColor: getPokemonTypeColor(pokemon.types[0].type.name),
+              progressColor: getPokemonTypeColor(pokemonType),
               backgroundColor: pokeNixBackgroundDefaultInput,
-              percent: 0.6,
+              percent: pokemonStatPercent( stat.baseStat + stat.effort, pokemonMaxStat( index == 0 ? true : false, stat.baseStat)),
               animation: true,
-
             ),
           ),
           Container(
             width: MediaQuery.of(context).size.width * 0.10,
-            child: Text(
-              '200',
-              style:
-                  pokeNixDescriptionTextStlye.copyWith(color: pokeNixTextGrey),
-              textAlign: TextAlign.right,
-            ),
-          ),
-          Container(
-            width: MediaQuery.of(context).size.width * 0.10,
-            child: Text(
-              '294',
-              style:
-                  pokeNixDescriptionTextStlye.copyWith(color: pokeNixTextGrey),
-              textAlign: TextAlign.right
-            ),
+            child: Text('${pokemonMaxStat( index == 0 ? true : false, stat.baseStat)}',
+                style: pokeNixDescriptionTextStlye.copyWith(
+                    color: pokeNixTextGrey),
+                textAlign: TextAlign.right),
           ),
         ],
       ),

@@ -1,4 +1,4 @@
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:animate_do/animate_do.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -7,8 +7,8 @@ import 'package:pokedex/src/models/pokemon.dart';
 import 'package:pokedex/src/theme/constants.dart';
 import 'package:intl/intl.dart';
 import 'package:pokedex/src/views/home/pokemon_details_page.dart';
+import 'package:pokedex/src/widgets/components/pokedex/pokemon_image.dart';
 import 'package:pokedex/src/widgets/components/pokedex/pokemon_list_types.dart';
-import 'package:shimmer/shimmer.dart';
 
 class PokemonItem extends StatelessWidget {
   const PokemonItem({
@@ -108,25 +108,10 @@ class PokemonItem extends StatelessWidget {
               ),
             ),
             Positioned(
-                right: 10,
-                top: 0,
-                child: Hero(
-                  tag: pokemon.id,
-                  child: CachedNetworkImage(
-                    key: UniqueKey(),
-                    imageUrl:
-                        '${pokemon.sprites.other.officialArtwork.frontDefault}',
-                    placeholder: (_, __) {
-                      return Shimmer.fromColors(
-                        baseColor: pokeNixShimmerBaseColor,
-                        highlightColor: pokeNixShimmerHighlightColor,
-                        child: Image.asset('assets/images/png/25.png'),
-                      );
-                    },
-                    height: size.height * 0.20,
-                    fit: BoxFit.cover,
-                  ),
-                ))
+              right: 10,
+              top: 0,
+              child: FadeIn(child: PokemonImage(pokemon: pokemon)),
+            )
           ],
         ),
       ),

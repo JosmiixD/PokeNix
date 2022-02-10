@@ -6,6 +6,7 @@ import 'package:pokedex/src/helpers/helpers.dart';
 import 'package:pokedex/src/models/pokemon.dart';
 import 'package:pokedex/src/theme/constants.dart';
 import 'package:pokedex/src/widgets/components/general/pokenix_custom_back_button.dart';
+import 'package:pokedex/src/widgets/components/pokedex/pokemon_image.dart';
 import 'package:pokedex/src/widgets/components/pokedex/pokemon_list_types.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -85,23 +86,27 @@ class PokemonHeader extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    Hero(
-                      tag: pokemon.id,
-                      child: CachedNetworkImage(
-                        key: UniqueKey(),
-                        imageUrl:
-                            '${pokemon.sprites.other.officialArtwork.frontDefault}',
-                        placeholder: (_, __) {
-                          return Shimmer.fromColors(
-                            baseColor: pokeNixShimmerBaseColor,
-                            highlightColor: pokeNixShimmerHighlightColor,
-                            child: Image.asset('assets/images/png/25.png'),
-                          );
-                        },
-                        fit: BoxFit.cover,
-                        height: 150,
-                      ),
+                    PokemonImage(
+                      pokemon: pokemon,
+                      height: 150,
                     ),
+                    // Hero(
+                    //   tag: pokemon.id,
+                    //   child: CachedNetworkImage(
+                    //     key: UniqueKey(),
+                    //     imageUrl:
+                    //         '${pokemon.sprites.other.officialArtwork.frontDefault}',
+                    //     placeholder: (_, __) {
+                    //       return Shimmer.fromColors(
+                    //         baseColor: pokeNixShimmerBaseColor,
+                    //         highlightColor: pokeNixShimmerHighlightColor,
+                    //         child: Image.asset('assets/images/png/25.png'),
+                    //       );
+                    //     },
+                    //     fit: BoxFit.cover,
+                    //     height: 150,
+                    //   ),
+                    // ),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [

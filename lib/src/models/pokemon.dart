@@ -8,8 +8,6 @@ class Pokemon {
     Pokemon({
         this.abilities,
         this.baseExperience,
-        this.forms,
-        this.gameIndices,
         this.height,
         this.heldItems,
         this.id,
@@ -18,7 +16,6 @@ class Pokemon {
         this.moves,
         this.name,
         this.order,
-        this.pastTypes,
         this.species,
         this.sprites,
         this.stats,
@@ -28,8 +25,6 @@ class Pokemon {
 
     List<Ability> abilities;
     int baseExperience;
-    List<Species> forms;
-    List<GameIndex> gameIndices;
     int height;
     List<dynamic> heldItems;
     int id;
@@ -38,7 +33,6 @@ class Pokemon {
     List<Move> moves;
     String name;
     int order;
-    List<dynamic> pastTypes;
     Species species;
     Sprites sprites;
     List<Stat> stats;
@@ -48,8 +42,6 @@ class Pokemon {
     factory Pokemon.fromJson(Map<String, dynamic> json) => Pokemon(
         abilities: List<Ability>.from(json["abilities"].map((x) => Ability.fromJson(x))),
         baseExperience: json["base_experience"],
-        forms: List<Species>.from(json["forms"].map((x) => Species.fromJson(x))),
-        gameIndices: List<GameIndex>.from(json["game_indices"].map((x) => GameIndex.fromJson(x))),
         height: json["height"],
         heldItems: List<dynamic>.from(json["held_items"].map((x) => x)),
         id: json["id"],
@@ -58,7 +50,6 @@ class Pokemon {
         moves: List<Move>.from(json["moves"].map((x) => Move.fromJson(x))),
         name: json["name"],
         order: json["order"],
-        pastTypes: List<dynamic>.from(json["past_types"].map((x) => x)),
         species: Species.fromJson(json["species"]),
         sprites: Sprites.fromJson(json["sprites"]),
         stats: List<Stat>.from(json["stats"].map((x) => Stat.fromJson(x))),
@@ -69,8 +60,6 @@ class Pokemon {
     Map<String, dynamic> toJson() => {
         "abilities": List<dynamic>.from(abilities.map((x) => x.toJson())),
         "base_experience": baseExperience,
-        "forms": List<dynamic>.from(forms.map((x) => x.toJson())),
-        "game_indices": List<dynamic>.from(gameIndices.map((x) => x.toJson())),
         "height": height,
         "held_items": List<dynamic>.from(heldItems.map((x) => x)),
         "id": id,
@@ -79,7 +68,6 @@ class Pokemon {
         "moves": List<dynamic>.from(moves.map((x) => x.toJson())),
         "name": name,
         "order": order,
-        "past_types": List<dynamic>.from(pastTypes.map((x) => x)),
         "species": species.toJson(),
         "sprites": sprites.toJson(),
         "stats": List<dynamic>.from(stats.map((x) => x.toJson())),
@@ -132,67 +120,19 @@ class Species {
     };
 }
 
-class GameIndex {
-    GameIndex({
-        this.gameIndex,
-        this.version,
-    });
-
-    int gameIndex;
-    Species version;
-
-    factory GameIndex.fromJson(Map<String, dynamic> json) => GameIndex(
-        gameIndex: json["game_index"],
-        version: Species.fromJson(json["version"]),
-    );
-
-    Map<String, dynamic> toJson() => {
-        "game_index": gameIndex,
-        "version": version.toJson(),
-    };
-}
-
 class Move {
     Move({
         this.move,
-        this.versionGroupDetails,
     });
 
     Species move;
-    List<VersionGroupDetail> versionGroupDetails;
 
     factory Move.fromJson(Map<String, dynamic> json) => Move(
         move: Species.fromJson(json["move"]),
-        versionGroupDetails: List<VersionGroupDetail>.from(json["version_group_details"].map((x) => VersionGroupDetail.fromJson(x))),
     );
 
     Map<String, dynamic> toJson() => {
         "move": move.toJson(),
-        "version_group_details": List<dynamic>.from(versionGroupDetails.map((x) => x.toJson())),
-    };
-}
-
-class VersionGroupDetail {
-    VersionGroupDetail({
-        this.levelLearnedAt,
-        this.moveLearnMethod,
-        this.versionGroup,
-    });
-
-    int levelLearnedAt;
-    Species moveLearnMethod;
-    Species versionGroup;
-
-    factory VersionGroupDetail.fromJson(Map<String, dynamic> json) => VersionGroupDetail(
-        levelLearnedAt: json["level_learned_at"],
-        moveLearnMethod: Species.fromJson(json["move_learn_method"]),
-        versionGroup: Species.fromJson(json["version_group"]),
-    );
-
-    Map<String, dynamic> toJson() => {
-        "level_learned_at": levelLearnedAt,
-        "move_learn_method": moveLearnMethod.toJson(),
-        "version_group": versionGroup.toJson(),
     };
 }
 
@@ -243,7 +183,6 @@ class Versions {
         this.generationIii,
         this.generationIv,
         this.generationV,
-        this.generationVi,
         this.generationVii,
         this.generationViii,
     });
@@ -253,7 +192,6 @@ class Versions {
     GenerationIii generationIii;
     GenerationIv generationIv;
     GenerationV generationV;
-    Map<String, Home> generationVi;
     GenerationVii generationVii;
     GenerationViii generationViii;
 
@@ -263,7 +201,6 @@ class Versions {
         generationIii: GenerationIii.fromJson(json["generation-iii"]),
         generationIv: GenerationIv.fromJson(json["generation-iv"]),
         generationV: GenerationV.fromJson(json["generation-v"]),
-        generationVi: Map.from(json["generation-vi"]).map((k, v) => MapEntry<String, Home>(k, Home.fromJson(v))),
         generationVii: GenerationVii.fromJson(json["generation-vii"]),
         generationViii: GenerationViii.fromJson(json["generation-viii"]),
     );
@@ -274,7 +211,6 @@ class Versions {
         "generation-iii": generationIii.toJson(),
         "generation-iv": generationIv.toJson(),
         "generation-v": generationV.toJson(),
-        "generation-vi": Map.from(generationVi).map((k, v) => MapEntry<String, dynamic>(k, v.toJson())),
         "generation-vii": generationVii.toJson(),
         "generation-viii": generationViii.toJson(),
     };
@@ -282,10 +218,6 @@ class Versions {
 
 class Sprites {
     Sprites({
-        this.backDefault,
-        this.backFemale,
-        this.backShiny,
-        this.backShinyFemale,
         this.frontDefault,
         this.frontFemale,
         this.frontShiny,
@@ -308,10 +240,6 @@ class Sprites {
     Sprites animated;
 
     factory Sprites.fromJson(Map<String, dynamic> json) => Sprites(
-        backDefault: json["back_default"],
-        backFemale: json["back_female"],
-        backShiny: json["back_shiny"],
-        backShinyFemale: json["back_shiny_female"],
         frontDefault: json["front_default"],
         frontFemale: json["front_female"],
         frontShiny: json["front_shiny"],
@@ -322,10 +250,6 @@ class Sprites {
     );
 
     Map<String, dynamic> toJson() => {
-        "back_default": backDefault,
-        "back_female": backFemale,
-        "back_shiny": backShiny,
-        "back_shiny_female": backShinyFemale,
         "front_default": frontDefault,
         "front_female": frontFemale,
         "front_shiny": frontShiny,
@@ -480,51 +404,19 @@ class Emerald {
     };
 }
 
-class Home {
-    Home({
-        this.frontDefault,
-        this.frontFemale,
-        this.frontShiny,
-        this.frontShinyFemale,
-    });
-
-    String frontDefault;
-    dynamic frontFemale;
-    String frontShiny;
-    dynamic frontShinyFemale;
-
-    factory Home.fromJson(Map<String, dynamic> json) => Home(
-        frontDefault: json["front_default"],
-        frontFemale: json["front_female"],
-        frontShiny: json["front_shiny"],
-        frontShinyFemale: json["front_shiny_female"],
-    );
-
-    Map<String, dynamic> toJson() => {
-        "front_default": frontDefault,
-        "front_female": frontFemale,
-        "front_shiny": frontShiny,
-        "front_shiny_female": frontShinyFemale,
-    };
-}
-
 class GenerationVii {
     GenerationVii({
         this.icons,
-        this.ultraSunUltraMoon,
     });
 
     DreamWorld icons;
-    Home ultraSunUltraMoon;
 
     factory GenerationVii.fromJson(Map<String, dynamic> json) => GenerationVii(
         icons: DreamWorld.fromJson(json["icons"]),
-        ultraSunUltraMoon: Home.fromJson(json["ultra-sun-ultra-moon"]),
     );
 
     Map<String, dynamic> toJson() => {
         "icons": icons.toJson(),
-        "ultra-sun-ultra-moon": ultraSunUltraMoon.toJson(),
     };
 }
 
@@ -567,23 +459,19 @@ class GenerationViii {
 class Other {
     Other({
         this.dreamWorld,
-        this.home,
         this.officialArtwork,
     });
 
     DreamWorld dreamWorld;
-    Home home;
     OfficialArtwork officialArtwork;
 
     factory Other.fromJson(Map<String, dynamic> json) => Other(
         dreamWorld: DreamWorld.fromJson(json["dream_world"]),
-        home: Home.fromJson(json["home"]),
         officialArtwork: OfficialArtwork.fromJson(json["official-artwork"]),
     );
 
     Map<String, dynamic> toJson() => {
         "dream_world": dreamWorld.toJson(),
-        "home": home.toJson(),
         "official-artwork": officialArtwork.toJson(),
     };
 }

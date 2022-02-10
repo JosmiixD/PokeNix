@@ -32,7 +32,7 @@ class PokemonService with ChangeNotifier {
 
     this.isLoading = true;
 
-    final response = await Dio().get( (nextPokemon != '') ? nextPokemon : '${Environment.pokeApiUrl}/pokemon' );
+    final response = await Dio().get( (nextPokemon != '') ? nextPokemon : '${Environment.pokeApiUrl}/pokemon?limit=20' );
 
     final List<dynamic> data = response.data['results'];
     nextPokemon = response.data['next'];
@@ -66,6 +66,7 @@ class PokemonService with ChangeNotifier {
     }
 
   }
+
 
   Future<Pokemon> getPokemon( String url ) async {
 
