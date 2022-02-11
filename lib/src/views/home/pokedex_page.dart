@@ -7,21 +7,42 @@ import 'package:pokedex/src/widgets/components/pokedex/pokemon_list.dart';
 import 'package:pokedex/src/widgets/components/general/pokenix_navigation_drawer.dart';
 import 'package:provider/provider.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
   final scrollController = new ScrollController();
 
   @override
-  Widget build(BuildContext context) {
-    final pokemonService = Provider.of<PokemonService>(context);
+  void initState() {
+    super.initState();
+    final pokemonService =
+          Provider.of<PokemonService>(context, listen: false);
 
     scrollController.addListener(() {
       if (scrollController.position.pixels >=
-              scrollController.position.maxScrollExtent - 200 &&
+              scrollController.position.maxScrollExtent - 400 &&
           !pokemonService.isLoading) {
         pokemonService.getPokemonData();
         print('Gettin new pokemon');
         }
     });
+  }
+
+  @override
+  void dispose() {
+    scrollController.dispose();
+    print("Dispose scrollcontroller");
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // final pokemonService = Provider.of<PokemonService>(context);
+
+    
 
     return Scaffold(
         drawer: ClientNavigationDrawer(),

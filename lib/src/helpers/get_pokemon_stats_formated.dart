@@ -41,3 +41,14 @@ pokemonStatPercent( int baseStatPlusEffort, int maxStat ) {
 
   return (((baseStatPlusEffort * 2 ) * 100) / maxStat) / 100;
 }
+
+String pokemonTotalStat( List<Stat> stats ) {
+
+  int total = 0;
+  stats.asMap().forEach((index, stat) {
+    total += stat.baseStat;
+  });
+
+  return total.toString();
+
+}

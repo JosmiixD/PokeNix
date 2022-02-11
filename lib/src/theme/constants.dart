@@ -77,3 +77,33 @@ const Color pokeNixTypeSteelBackgroundColor = Color(0xff4C91B2);
 const Color pokeNixTypeWaterBackgroundColor = Color(0xff58ABF6);
 // END::Types Background Colors
 
+
+//BEGIN:: TEXTS
+
+const String pokemonStatAdvertise = '''The range shown on the right is for a level 100 Pokémon.
+Maximum values are based on a beneficial nature, 252 EVs, 31 IVs.
+''';
+
+// END:: TEXTS
+
+
+const List<String> pokemonTypesList = [
+  'bug',
+  'dark',
+  'dragon',
+  'electric',
+  'fairy',
+  'fighting',
+  'fire',
+  'flying',
+  'ghost',
+  'grass',
+  'ground',
+  'ice',
+  'normal',
+  'poison',
+  'psychic',
+  'rock',
+  'steel',
+  'water',
+];

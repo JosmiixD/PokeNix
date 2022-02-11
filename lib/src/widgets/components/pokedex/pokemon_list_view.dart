@@ -2,6 +2,7 @@ import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:pokedex/src/models/pokemon.dart';
 import 'package:pokedex/src/services/pokemon_service.dart';
+import 'package:pokedex/src/widgets/components/general/pokenix_circular_progress_indicator.dart';
 import 'package:pokedex/src/widgets/components/pokedex/pokemon_item.dart';
 
 class PokemonListView extends StatelessWidget {
@@ -32,13 +33,7 @@ class PokemonListView extends StatelessWidget {
                       ),
                       if( (pokemonService.isLoading) && (index + 1 == pokemonService.pokemon.length))
                         ...[
-                          Container(
-                            padding: EdgeInsets.all(5),
-                            width: MediaQuery.of(context).size.width,
-                            child: Center(
-                              child: CircularProgressIndicator( strokeWidth: 2,),
-                            ),
-                          )
+                          PokenixCircularProgressIndicator(animate: !pokemonService.isLoading ),
                         ]
                     ],
                   );

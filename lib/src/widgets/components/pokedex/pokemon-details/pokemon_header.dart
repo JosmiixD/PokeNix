@@ -1,4 +1,4 @@
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
@@ -8,7 +8,6 @@ import 'package:pokedex/src/theme/constants.dart';
 import 'package:pokedex/src/widgets/components/general/pokenix_custom_back_button.dart';
 import 'package:pokedex/src/widgets/components/pokedex/pokemon_image.dart';
 import 'package:pokedex/src/widgets/components/pokedex/pokemon_list_types.dart';
-import 'package:shimmer/shimmer.dart';
 
 class PokemonHeader extends StatelessWidget {
   const PokemonHeader({
@@ -90,23 +89,6 @@ class PokemonHeader extends StatelessWidget {
                       pokemon: pokemon,
                       height: 150,
                     ),
-                    // Hero(
-                    //   tag: pokemon.id,
-                    //   child: CachedNetworkImage(
-                    //     key: UniqueKey(),
-                    //     imageUrl:
-                    //         '${pokemon.sprites.other.officialArtwork.frontDefault}',
-                    //     placeholder: (_, __) {
-                    //       return Shimmer.fromColors(
-                    //         baseColor: pokeNixShimmerBaseColor,
-                    //         highlightColor: pokeNixShimmerHighlightColor,
-                    //         child: Image.asset('assets/images/png/25.png'),
-                    //       );
-                    //     },
-                    //     fit: BoxFit.cover,
-                    //     height: 150,
-                    //   ),
-                    // ),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -117,10 +99,15 @@ class PokemonHeader extends StatelessWidget {
                               color: pokeNixTextWhite),
                         ),
                         SizedBox( height: 5,),
-                        Text(
-                          '${toBeginningOfSentenceCase(pokemon.name)}',
-                          style: pokeNixApplicationTitleTextStyle.copyWith(
-                              color: pokeNixTextWhite),
+                        Container(
+                          width: size.width * 0.40,
+                          child: AutoSizeText(
+                            '${toBeginningOfSentenceCase(pokemon.name)}',
+                            style: pokeNixApplicationTitleTextStyle.copyWith(
+                                color: pokeNixTextWhite),
+                            maxLines: 1,
+                            maxFontSize: 32,
+                          ),
                         ),
                         SizedBox( height: 5,),
                         ListTypes(types: pokemon.types)

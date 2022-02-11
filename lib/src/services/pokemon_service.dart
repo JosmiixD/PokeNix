@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:pokedex/src/env/environment.dart';
 import 'package:pokedex/src/models/pokemon.dart';
 import 'package:pokedex/src/models/pokemon_species_info.dart';
+import 'package:pokedex/src/models/pokemon_type_info.dart';
 
 class PokemonService with ChangeNotifier {
 
@@ -12,7 +13,8 @@ class PokemonService with ChangeNotifier {
 
   String nextPokemon = '';
   List<Pokemon> pokemon = [];  
-  PokemonSpeciesInfo _pokemonSpeciesInfo = new PokemonSpeciesInfo();
+  PokemonSpeciesInfo _pokemonSpeciesInfo;
+  PokemonTypeInfo _pokemonTypeInfo;
 
   bool get isLoading => this._isLoading;
   set isLoading( bool value ) {
@@ -24,6 +26,13 @@ class PokemonService with ChangeNotifier {
 
   set pokemonSpeciesInfo( PokemonSpeciesInfo info ) {
     this._pokemonSpeciesInfo = info;
+    notifyListeners();
+  }
+
+  PokemonTypeInfo get pokemonTypeInfo => this._pokemonTypeInfo;
+
+  set pokemonTypeInfo( PokemonTypeInfo info ) {
+    this._pokemonTypeInfo = info;
     notifyListeners();
   }
 
@@ -48,21 +57,26 @@ class PokemonService with ChangeNotifier {
 
   }
 
-  Future<dynamic> getPokemonSpeciesData( int id ) async {
+  Future<dynamic> getPokemonSpeciesData( int id, String url ) async {
 
     this.isLoading = true;
 
     try {
 
-      final response = await Dio().get('${Environment.pokeApiUrl}/pokemon-species/$id');
-      final PokemonSpeciesInfo pokemonSpeciesInfo = pokemonSpeciesInfoFromJson( jsonEncode(response.data) );
+      final speciesResponse = await Dio().get('${Environment.pokeApiUrl}/pokemon-species/$id');
+      final PokemonSpeciesInfo pokemonSpeciesInfo = pokemonSpeciesInfoFromJson( jsonEncode(speciesResponse.data) );
+
+      final typesResponse = await Dio().get(url);
+      final PokemonTypeInfo pokemonTypeInfo = pokemonTypeInfoFromJson( jsonEncode(typesResponse.data) );
 
       this.isLoading = false;
       this.pokemonSpeciesInfo = pokemonSpeciesInfo;
+      this.pokemonTypeInfo = pokemonTypeInfo;
+      print('--------------- Im gettin species data ----------------------');
 
     } catch (e) {
       this.isLoading = false;
-      this.pokemonSpeciesInfo = new PokemonSpeciesInfo();
+      this.pokemonSpeciesInfo = null;
     }
 
   }

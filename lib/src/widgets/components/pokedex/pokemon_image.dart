@@ -19,31 +19,21 @@ class PokemonImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     final size = MediaQuery.of(context).size;
 
     return Hero(
-      tag: pokemon.id,
-      child: (pokemon.sprites.other.dreamWorld.frontDefault != null )
-        ? Container(
-          width: this.width != null ? this.width : size.width * 0.40,
-          child: SvgPicture.asset(
-            'assets/images/svg/pokemon/${pokemon.id}.svg',
-            height: this.height != null ? this.height :size.height * 0.20,
-            fit: BoxFit.scaleDown,
-          ),
-        )
-        : CachedNetworkImage(
+        tag: pokemon.id,
+        child: CachedNetworkImage(
+          fadeInDuration: Duration( milliseconds: 400 ),
           key: UniqueKey(),
           imageUrl: '${pokemon.sprites.other.officialArtwork.frontDefault}',
           placeholder: (_, __) => Shimmer.fromColors(
-            child: Image.asset('assets/images/png/25.png'), 
-            baseColor: pokeNixShimmerBaseColor, 
-            highlightColor: pokeNixShimmerHighlightColor
-          ),
+              child: Image.asset('assets/images/png/25.png'),
+              baseColor: pokeNixShimmerBaseColor,
+              highlightColor: pokeNixShimmerHighlightColor),
           height: size.height * 0.20,
           fit: BoxFit.cover,
-        )
-    );
+          filterQuality: FilterQuality.none,
+        ));
   }
 }

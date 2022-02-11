@@ -1,11 +1,15 @@
+import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:pokedex/src/helpers/helpers.dart';
 import 'package:pokedex/src/models/pokemon.dart';
 import 'package:pokedex/src/models/pokemon_species_info.dart';
+import 'package:pokedex/src/models/pokemon_type_info.dart';
 import 'package:pokedex/src/services/pokemon_service.dart';
 import 'package:pokedex/src/theme/constants.dart';
+import 'package:pokedex/src/widgets/components/general/pokenix_circular_progress_indicator.dart';
 import 'package:pokedex/src/widgets/components/pokedex/pokemon-details/pokemon_header.dart';
 import 'package:provider/provider.dart';
 
@@ -53,7 +57,7 @@ class _PokemonDetailsTabBarState extends State<PokemonDetailsTabBar>
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
       final pokemonService =
           Provider.of<PokemonService>(context, listen: false);
-      await pokemonService.getPokemonSpeciesData(widget.pokemon.id);
+      await pokemonService.getPokemonSpeciesData(widget.pokemon.id, widget.pokemon.types[0].type.url );
     });
   }
 
@@ -95,20 +99,21 @@ class _PokemonDetailsTabBarState extends State<PokemonDetailsTabBar>
             child: (pokemonService.isLoading &&
                     pokemonService.pokemonSpeciesInfo !=
                         new PokemonSpeciesInfo())
-                ? Center(
-                    child: CircularProgressIndicator(),
-                  )
-                : TabBarView(
-                    physics: BouncingScrollPhysics(),
-                    controller: tabController,
-                    children: [
-                      AboutPokemonPage(pokemon: pokemon),
-                      StatsPokemonPage(pokemon: pokemon),
-                      Container(
-                        child: Text('Terceri Tab'),
-                      ),
-                    ],
-                  ),
+                ? PokenixCircularProgressIndicator(animate: !pokemonService.isLoading )
+                : FadeIn(
+                  duration: Duration( milliseconds: 600 ),
+                  child: TabBarView(
+                      physics: BouncingScrollPhysics(),
+                      controller: tabController,
+                      children: [
+                        AboutPokemonPage(pokemon: pokemon),
+                        StatsPokemonPage(pokemon: pokemon),
+                        Container(
+                          child: Text('Terceri Tab'),
+                        ),
+                      ],
+                    ),
+                ),
           ),
         )
       ],
@@ -122,9 +127,15 @@ class StatsPokemonPage extends StatelessWidget {
   const StatsPokemonPage({Key key, @required this.pokemon}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    final pokemonService = Provider.of<PokemonService>(context);
-    PokemonSpeciesInfo pokemonSpeciesInfo = pokemonService.pokemonSpeciesInfo;
 
+    final width = MediaQuery.of(context).size.width;
+    final typeColor = getPokemonTypeColor(pokemon.types[0].type.name);
+
+    // final typesSublist = [];
+    // typesSublist[0] =  pokemonTypesList.sublist(0, 9);
+    // typesSublist[1] =  pokemonTypesList.sublist(9, 17);
+
+    final pokemonService = Provider.of<PokemonService>(context);
     return !pokemonService.isLoading
         ? Container(
             padding: EdgeInsets.symmetric(horizontal: 30),
@@ -139,7 +150,7 @@ class StatsPokemonPage extends StatelessWidget {
                   Text(
                     'Base Stats',
                     style: pokeNixFilterTitleTextStyle.copyWith(
-                        color: getPokemonTypeColor(pokemon.types[0].type.name)),
+                        color: typeColor),
                   ),
                   SizedBox(
                     height: 20,
@@ -151,11 +162,157 @@ class StatsPokemonPage extends StatelessWidget {
                       index: index,
                     );
                   }),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(
+                        width: width * 0.15,
+                        child: Text( 'Total', style: pokeNixPokemonTypeTextStlye),
+                      ),
+                      Container(
+                        width: width * 0.10,
+                        child: Text(
+                          pokemonTotalStat( pokemon.stats ),
+                          style:
+                              pokeNixDescriptionTextStlye.copyWith(color: pokeNixTextGrey, fontWeight: FontWeight.w600, fontSize: 16),
+                        ),
+                      ),
+                      SizedBox( width: width * 0.45),
+                      Container(
+                        width: MediaQuery.of(context).size.width * 0.10,
+                        child: Text('Max',
+                            style: pokeNixDescriptionTextStlye.copyWith(
+                                color: pokeNixTextGrey),
+                            textAlign: TextAlign.right),
+                      ),
+                    ],
+                  ),
+                  Container(
+                    padding: EdgeInsets.symmetric( vertical: 20),
+                    child: Text( pokemonStatAdvertise, style: pokeNixPokemonTypeTextStlye.copyWith(color: pokeNixTextGrey) )
+                  ),
+                  Text(
+                    'Type Defenses',
+                    style: pokeNixFilterTitleTextStyle.copyWith(
+                        color: typeColor),
+                  ),
+                  SizedBox( height: 20),
+                  Text('The effectiveness of each type on ${toBeginningOfSentenceCase(pokemon.name)}'),
+                  SizedBox( height: 20),
+                  Container(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        EffectivenessTypesChips(
+                          pokemonService: pokemonService,
+                        ),
+                        SizedBox( height: 10),
+                        EffectivenessTypesChips(
+                          pokemonService: pokemonService,
+                          begin: 9
+                        ),
+                        SizedBox( height: 20),
+                      ],
+                    ),
+                  )
                 ],
               ),
             ),
           )
         : Container();
+  }
+}
+
+class EffectivenessTypesChips extends StatelessWidget {
+  const EffectivenessTypesChips({
+    Key key,
+    @required this.pokemonService, this.begin = 0,
+  }) : super(key: key);
+
+  final PokemonService pokemonService;
+  final int begin;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: List.generate( 9 , (index) {
+
+        bool hasDoubleDamage = false;
+        bool hasHalfDamage = false;
+        int position = index + begin;
+
+        String pokemonTypeName = pokemonTypesList[position];
+        List<Damage> doubleDamageFrom = pokemonService.pokemonTypeInfo.damageRelations.doubleDamageFrom;
+        List<Damage> halfDamageFrom = pokemonService.pokemonTypeInfo.damageRelations.halfDamageFrom;
+        
+        doubleDamageFrom.forEach(( doubleDamage ) {
+
+          if( doubleDamage.name == pokemonTypeName ) {
+            hasDoubleDamage = true;
+          }
+
+        });
+
+        halfDamageFrom.forEach(( halfDamage ) {
+
+          if( halfDamage.name == pokemonTypeName ) {
+            hasHalfDamage = true;
+          }
+
+        });
+
+        return BounceInDown(
+          from: 20,
+          delay: Duration(milliseconds: (30 * position) + 1 ),
+          child: PokemonTypeChip(
+            typeName: pokemonTypesList[position],
+            doubleDamage: hasDoubleDamage,
+            halfDamage: hasHalfDamage,
+          ),
+        );
+      } )
+    );
+  }
+}
+
+class PokemonTypeChip extends StatelessWidget {
+  const PokemonTypeChip({
+    Key key, @required this.typeName, this.doubleDamage = false, this.halfDamage = false,
+  }) : super(key: key);
+
+  final String typeName;
+  final bool doubleDamage;
+  final bool halfDamage;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        Container(
+          padding: EdgeInsets.all(5),
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(5),
+              color: getPokemonTypeColor( typeName )),
+          child: SvgPicture.asset(
+            'assets/images/svg/types/${toBeginningOfSentenceCase(typeName)}.svg',
+            color: pokeNixTextWhite,
+            height: 18,
+          ),
+        ),
+        if( doubleDamage )
+        ...[
+          Text('2', style: pokeNixDescriptionTextStlye.copyWith( color: pokeNixTextGrey ))
+        ] else if( halfDamage )
+        ...[
+          Text('½', style: pokeNixDescriptionTextStlye.copyWith( color: pokeNixTextGrey ))
+        ] else
+        ...[
+          Text('', style: pokeNixDescriptionTextStlye.copyWith( color: pokeNixTextGrey ))
+        ],
+      ],
+    );
   }
 }
 
@@ -274,7 +431,7 @@ class AboutPokemonPage extends StatelessWidget {
                     ),
                     PokemoLabelInfo(
                       label: 'Species',
-                      description: '${pokemonSpeciesInfo.genera[7].genus}',
+                      description: pokemonSpeciesInfo.genera[7].genus ?? "",
                     ),
                     PokemoLabelInfo(
                       label: 'Height',
