@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:pokedex/src/models/species.dart';
+
 Pokemon pokemonFromJson(String str) => Pokemon.fromJson(json.decode(str));
 
 String pokemonToJson(Pokemon data) => json.encode(data.toJson());
@@ -97,26 +99,6 @@ class Ability {
         "ability": ability.toJson(),
         "is_hidden": isHidden,
         "slot": slot,
-    };
-}
-
-class Species {
-    Species({
-        this.name,
-        this.url,
-    });
-
-    String name;
-    String url;
-
-    factory Species.fromJson(Map<String, dynamic> json) => Species(
-        name: json["name"],
-        url: json["url"],
-    );
-
-    Map<String, dynamic> toJson() => {
-        "name": name,
-        "url": url,
     };
 }
 

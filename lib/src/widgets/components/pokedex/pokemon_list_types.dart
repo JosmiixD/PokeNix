@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pokedex/src/models/pokemon.dart';
+import 'package:pokedex/src/models/species.dart';
 import 'package:pokedex/src/widgets/components/pokedex/pokemon_type_chip.dart';
 
 class ListTypes extends StatelessWidget {

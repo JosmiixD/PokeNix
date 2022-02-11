@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:pokedex/src/helpers/helpers.dart';
-import 'package:pokedex/src/models/pokemon.dart';
+import 'package:pokedex/src/models/species.dart';
 import 'package:pokedex/src/theme/constants.dart';
 
 import 'package:intl/intl.dart';
