@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:pokedex/src/delegates/search_pokemon_delegate.dart';
 import 'package:pokedex/src/services/pokemon_service.dart';
 import 'package:pokedex/src/theme/constants.dart';
 import 'package:pokedex/src/widgets/components/general/hamburger_menu_button.dart';
@@ -26,7 +27,6 @@ class _HomePageState extends State<HomePage> {
               scrollController.position.maxScrollExtent - 400 &&
           !pokemonService.isLoading) {
         pokemonService.getPokemonData();
-        print('Gettin new pokemon');
         }
     });
   }
@@ -34,7 +34,6 @@ class _HomePageState extends State<HomePage> {
   @override
   void dispose() {
     scrollController.dispose();
-    print("Dispose scrollcontroller");
     super.dispose();
   }
 
@@ -156,28 +155,31 @@ class _PokeNixHeader extends SliverPersistentHeaderDelegate {
             bottom: 10,
             left: 20,
             right: 20,
-            child: Container(
-              decoration: BoxDecoration(
-                  color: pokeNixBackgroundDefaultInput,
-                  borderRadius: BorderRadius.circular(10)),
-              padding: EdgeInsets.symmetric(vertical: 20),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SvgPicture.asset(
-                    'assets/images/svg/icons/Search.svg',
-                    color: pokeNixTextGrey,
-                  ),
-                  SizedBox(
-                    width: 5,
-                  ),
-                  Text(
-                    'What Pokémon are you lookin for?',
-                    style: pokeNixDescriptionTextStlye.copyWith(
-                        color: pokeNixTextGrey),
-                  )
-                ],
+            child: GestureDetector(
+              child: Container(
+                decoration: BoxDecoration(
+                    color: pokeNixBackgroundDefaultInput,
+                    borderRadius: BorderRadius.circular(10)),
+                padding: EdgeInsets.symmetric(vertical: 20),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SvgPicture.asset(
+                      'assets/images/svg/icons/Search.svg',
+                      color: pokeNixTextGrey,
+                    ),
+                    SizedBox(
+                      width: 5,
+                    ),
+                    Text(
+                      'What Pokémon are you lookin for?',
+                      style: pokeNixDescriptionTextStlye.copyWith(
+                          color: pokeNixTextGrey),
+                    )
+                  ],
+                ),
               ),
+              onTap: () => showSearch(context: context, delegate: SearchPokemonDelegate()),
             ),
           )
         ],

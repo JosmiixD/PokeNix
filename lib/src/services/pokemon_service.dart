@@ -24,12 +24,10 @@ class PokemonService with ChangeNotifier {
 
 
   PokemonService() {
-
-    this.initPokemonService();
-
+    this.loadPokemonList();
   }
 
-  initPokemonService() async {
+  loadPokemonList() async {
     String jsonPokemon = await rootBundle.loadString('assets/data/pokemon.json');
     this.allPokemonList = pokemonListFromJson( jsonPokemon );
   }
@@ -65,8 +63,6 @@ class PokemonService with ChangeNotifier {
   Future<dynamic> getPokemonData() async {
 
     this.isLoading = true;
-
-    // this.allPokemonList.sublist()
 
     final response = await Dio().get( (nextPokemon != '') ? nextPokemon : '${Environment.pokeApiUrl}/pokemon?limit=20' );
 
