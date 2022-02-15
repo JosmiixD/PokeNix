@@ -1,8 +1,10 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pokedex/src/delegates/search_pokemon_delegate.dart';
 import 'package:pokedex/src/services/pokemon_service.dart';
 import 'package:pokedex/src/theme/constants.dart';
+import 'package:pokedex/src/views/search/search_pokemon_page.dart';
 import 'package:pokedex/src/widgets/components/general/hamburger_menu_button.dart';
 import 'package:pokedex/src/widgets/components/pokedex/pokemon_list.dart';
 import 'package:pokedex/src/widgets/components/general/pokenix_navigation_drawer.dart';
@@ -156,30 +158,39 @@ class _PokeNixHeader extends SliverPersistentHeaderDelegate {
             left: 20,
             right: 20,
             child: GestureDetector(
-              child: Container(
-                decoration: BoxDecoration(
-                    color: pokeNixBackgroundDefaultInput,
-                    borderRadius: BorderRadius.circular(10)),
-                padding: EdgeInsets.symmetric(vertical: 20),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SvgPicture.asset(
-                      'assets/images/svg/icons/Search.svg',
-                      color: pokeNixTextGrey,
-                    ),
-                    SizedBox(
-                      width: 5,
-                    ),
-                    Text(
-                      'What Pokémon are you lookin for?',
-                      style: pokeNixDescriptionTextStlye.copyWith(
-                          color: pokeNixTextGrey),
-                    )
-                  ],
+              child: Hero(
+                tag: 'pokenixSearch',
+                child: Container(
+                  decoration: BoxDecoration(
+                      color: pokeNixBackgroundDefaultInput,
+                      borderRadius: BorderRadius.circular(10)),
+                  padding: EdgeInsets.symmetric(vertical: 15),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SvgPicture.asset(
+                        'assets/images/svg/icons/Search.svg',
+                        color: pokeNixTextGrey,
+                      ),
+                      SizedBox(
+                        width: 5,
+                      ),
+                      Material(
+                        type: MaterialType.transparency,
+                        child: Text(
+                          'What Pokémon are you lookin for?',
+                          style: pokeNixDescriptionTextStlye.copyWith(
+                              color: pokeNixTextGrey),
+                        ),
+                      )
+                    ],
+                  ),
                 ),
               ),
-              onTap: () => showSearch(context: context, delegate: SearchPokemonDelegate()),
+              onTap: () {
+                Navigator.of(context).push(CupertinoPageRoute(
+                  builder: (_) => SearchPokemonPage()));
+              }
             ),
           )
         ],

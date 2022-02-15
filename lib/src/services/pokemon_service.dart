@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pokedex/src/env/environment.dart';
+import 'package:pokedex/src/global/global.dart';
 import 'package:pokedex/src/models/pokemon.dart';
 import 'package:pokedex/src/models/pokemon_evolution_chain.dart';
 import 'package:pokedex/src/models/pokemon_list.dart';
@@ -19,7 +20,6 @@ class PokemonService with ChangeNotifier {
   PokemonSpeciesInfo _pokemonSpeciesInfo;
   PokemonTypeInfo _pokemonTypeInfo;
   PokemonEvolutionChain _pokemonEvolutionChain;
-  List<PokemonList> allPokemonList = [];
   int currentPokemonListOffset = 0;
 
 
@@ -29,7 +29,7 @@ class PokemonService with ChangeNotifier {
 
   loadPokemonList() async {
     String jsonPokemon = await rootBundle.loadString('assets/data/pokemon.json');
-    this.allPokemonList = pokemonListFromJson( jsonPokemon );
+    globalPokemonList = pokemonListFromJson( jsonPokemon );
   }
 
   bool get isLoading => this._isLoading;

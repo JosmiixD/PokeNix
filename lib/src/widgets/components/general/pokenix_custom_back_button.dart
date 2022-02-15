@@ -6,8 +6,9 @@ class PokenixCustomBackButton extends StatelessWidget {
 
   final Color color;
   final double height;
+  final VoidCallback onPressed;
 
-  const PokenixCustomBackButton({Key key, this.color = pokeNixTextWhite, this.height = 20}) : super(key: key);
+  const PokenixCustomBackButton({Key key, this.color = pokeNixTextWhite, this.height = 20, this.onPressed }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +18,7 @@ class PokenixCustomBackButton extends StatelessWidget {
         color: this.color,
         height: this.height,
       ),
-      onPressed: () => Navigator.of(context).pop()
+      onPressed: this.onPressed != null ? this.onPressed : () => Navigator.of(context).pop()
     );
   }
 }

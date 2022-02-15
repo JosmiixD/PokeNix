@@ -97,33 +97,6 @@ class ClientNavigationDrawer extends StatelessWidget {
   }
 
 
-  Widget buildMenuItem( {
-    @required String title,
-    @required IconData icon,
-    @required VoidCallback onTap,
-    double iconSize = 20,
-  }) {
-
-    return ListTile(
-      contentPadding: EdgeInsets.symmetric( horizontal: 20),
-      title: Row(
-        children: [
-          FaIcon(
-            icon,
-            size: iconSize,
-          ),
-          SizedBox(
-            width: 10,
-          ),
-          Text( title,
-              style:
-                  TextStyle(fontWeight: FontWeight.w300, fontSize: 15)),
-        ],
-      ),
-      onTap: onTap,
-    );
-  }
-
   void selectedItem( BuildContext context, int index ) {
 
     Navigator.of(context).pop();

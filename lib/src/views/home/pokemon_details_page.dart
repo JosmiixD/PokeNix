@@ -605,7 +605,7 @@ class AboutPokemonPage extends StatelessWidget {
                     ),
                     PokemoLabelInfo(
                       label: 'Weight',
-                      description: '${pokemon.weight / 10} kg. (${pokemon.weight / 4.536 } lbs)',
+                      description: '${pokemon.weight / 10} kg. (${(pokemon.weight / 4.536).toStringAsFixed(2)} lbs)',
                     ),
                     Row(
                       children: [
