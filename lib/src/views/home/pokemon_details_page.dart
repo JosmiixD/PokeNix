@@ -77,6 +77,8 @@ class _PokemonDetailsTabBarState extends State<PokemonDetailsTabBar>
     final Pokemon pokemon = widget.pokemon;
     final pokemonService = Provider.of<PokemonService>(context);
 
+    final typeColor = getPokemonTypeColor(pokemon.types[0].type.name);
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -110,9 +112,9 @@ class _PokemonDetailsTabBarState extends State<PokemonDetailsTabBar>
                       physics: BouncingScrollPhysics(),
                       controller: tabController,
                       children: [
-                        AboutPokemonPage(pokemon: pokemon),
-                        StatsPokemonPage(pokemon: pokemon),
-                        EvolutionPokemonPage( pokemon: pokemon ),
+                        AboutPokemonPage(pokemon: pokemon, typeColor: typeColor,),
+                        StatsPokemonPage(pokemon: pokemon, typeColor: typeColor),
+                        EvolutionPokemonPage( pokemon: pokemon, typeColor: typeColor ),
                       ],
                     ),
                 ),
@@ -124,15 +126,15 @@ class _PokemonDetailsTabBarState extends State<PokemonDetailsTabBar>
 }
 
 class EvolutionPokemonPage extends StatelessWidget {
-  const EvolutionPokemonPage({ @required this.pokemon});
+  const EvolutionPokemonPage({ @required this.pokemon, @required this.typeColor });
 
   final Pokemon pokemon;
+  final typeColor;
 
   @override
   Widget build(BuildContext context) {
     final pokemonService = Provider.of<PokemonService>(context);
     final PokemonEvolutionChain pokemonEvolutionChain = pokemonService.pokemonEvolutionChain;
-    final typeColor = getPokemonTypeColor(pokemon.types[0].type.name);
   
     final size = MediaQuery.of(context).size;
 
@@ -209,9 +211,6 @@ class EvolutionPokemonPage extends StatelessWidget {
                         ),
                         Column(
                           children: pokemonEvolutionChain.chain.evolvesTo[0].evolvesTo.map((evolution) => EvolutionItem(pokemonSpecies: evolution.species )).toList()
-                          // children: pokemonEvolutionChain.chain.evolvesTo.map(( evolution ) {
-                          //     return EvolutionItem(pokemonSpecies: evolution.species );
-                          //   }).toList(),
                         )
                       ],
                     ),
@@ -293,13 +292,13 @@ class EvolutionItem extends StatelessWidget {
 
 class StatsPokemonPage extends StatelessWidget {
   final Pokemon pokemon;
+  final typeColor;
 
-  const StatsPokemonPage({Key key, @required this.pokemon}) : super(key: key);
+  const StatsPokemonPage({Key key, @required this.pokemon, @required this.typeColor }) : super(key: key);
   @override
   Widget build(BuildContext context) {
 
     final width = MediaQuery.of(context).size.width;
-    final typeColor = getPokemonTypeColor(pokemon.types[0].type.name);
 
     final pokemonService = Provider.of<PokemonService>(context);
     return !pokemonService.isLoading
@@ -316,7 +315,7 @@ class StatsPokemonPage extends StatelessWidget {
                   Text(
                     'Base Stats',
                     style: pokeNixFilterTitleTextStyle.copyWith(
-                        color: typeColor),
+                        color: typeColor ),
                   ),
                   SizedBox(
                     height: 20,
@@ -324,7 +323,7 @@ class StatsPokemonPage extends StatelessWidget {
                   ...List.generate(pokemon.stats.length, (index) {
                     return PokemonStatItem(
                       stat: pokemon.stats[index],
-                      pokemonType: pokemon.types[0].type.name,
+                      pokemonTypeColor: typeColor,
                       index: index,
                     );
                   }),
@@ -485,28 +484,31 @@ class PokemonTypeChip extends StatelessWidget {
 class PokemonStatItem extends StatelessWidget {
   const PokemonStatItem({
     Key key,
-    @required this.pokemonType,
+    @required this.pokemonTypeColor,
     @required this.stat,
     this.index
   }) : super(key: key);
 
-  final String pokemonType;
+  final pokemonTypeColor;
   final Stat stat;
   final int index;
 
   @override
   Widget build(BuildContext context) {
+
+    final Size size = MediaQuery.of(context).size;
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 20),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Container(
-            width: MediaQuery.of(context).size.width * 0.15,
+            width: size.width * 0.15,
             child: Text( pokemonStatNameFormated( index ), style: pokeNixPokemonTypeTextStlye),
           ),
           Container(
-            width: MediaQuery.of(context).size.width * 0.10,
+            width: size.width * 0.10,
             child: Text(
               stat.baseStat.toString(),
               style:
@@ -514,17 +516,17 @@ class PokemonStatItem extends StatelessWidget {
             ),
           ),
           Container(
-            width: MediaQuery.of(context).size.width * 0.45,
+            width: size.width * 0.45,
             height: 10,
             child: LinearPercentIndicator(
-              progressColor: getPokemonTypeColor(pokemonType),
+              progressColor: pokemonTypeColor,
               backgroundColor: pokeNixBackgroundDefaultInput,
               percent: pokemonStatPercent( stat.baseStat + stat.effort, pokemonMaxStat( index == 0 ? true : false, stat.baseStat)),
               animation: true,
             ),
           ),
           Container(
-            width: MediaQuery.of(context).size.width * 0.10,
+            width: size.width * 0.10,
             child: Text('${pokemonMaxStat( index == 0 ? true : false, stat.baseStat)}',
                 style: pokeNixDescriptionTextStlye.copyWith(
                     color: pokeNixTextGrey),
@@ -537,9 +539,10 @@ class PokemonStatItem extends StatelessWidget {
 }
 
 class AboutPokemonPage extends StatelessWidget {
-  const AboutPokemonPage({Key key, @required this.pokemon}) : super(key: key);
+  const AboutPokemonPage({Key key, @required this.pokemon, @required this.typeColor }) : super(key: key);
 
   final Pokemon pokemon;
+  final typeColor;
 
   @override
   Widget build(BuildContext context) {
@@ -590,14 +593,14 @@ class AboutPokemonPage extends StatelessWidget {
                       'Pokédex Data',
                       style: pokeNixFilterTitleTextStyle.copyWith(
                           color:
-                              getPokemonTypeColor(pokemon.types[0].type.name)),
+                              typeColor),
                     ),
                     SizedBox(
                       height: 30,
                     ),
                     PokemoLabelInfo(
                       label: 'Species',
-                      description: pokemonSpeciesInfo?.genera[7].genus ?? '',
+                      description: '${pokemonSpeciesInfo?.genera[7]?.genus}',
                     ),
                     PokemoLabelInfo(
                       label: 'Height',
@@ -639,8 +642,7 @@ class AboutPokemonPage extends StatelessWidget {
                     Text(
                       'Training',
                       style: pokeNixFilterTitleTextStyle.copyWith(
-                          color:
-                              getPokemonTypeColor(pokemon.types[0].type.name)),
+                          color: typeColor),
                     ),
                     SizedBox(
                       height: 30,
@@ -669,8 +671,7 @@ class AboutPokemonPage extends StatelessWidget {
                     Text(
                       'Breeding',
                       style: pokeNixFilterTitleTextStyle.copyWith(
-                          color:
-                              getPokemonTypeColor(pokemon.types[0].type.name)),
+                          color: typeColor),
                     ),
                     SizedBox(
                       height: 30,
