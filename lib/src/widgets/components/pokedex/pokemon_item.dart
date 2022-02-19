@@ -21,6 +21,7 @@ class PokemonItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+    final Color color = getPokemonTypeBackgroundColor( pokemon.types[0].type.name );
 
     return GestureDetector(
       onTap: () {
@@ -43,9 +44,17 @@ class PokemonItem extends StatelessWidget {
                     Container(
                       height: size.height * 0.17,
                       decoration: BoxDecoration(
-                          color: getPokemonTypeBackgroundColor(
-                              pokemon.types[0].type.name),
-                          borderRadius: BorderRadius.circular(10)),
+                          color: color,
+                          borderRadius: BorderRadius.circular(10),
+                          boxShadow: <BoxShadow>[
+                            BoxShadow(
+                              blurRadius: 5.0,
+                              spreadRadius: 1.0,
+                              color: color.withOpacity(0.5),
+                              offset:  Offset(0, 7.0)
+                            )
+                          ]
+                      ),
                       child: Stack(
                         children: [
                           Positioned(

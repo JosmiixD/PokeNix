@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:pokedex/src/delegates/search_pokemon_delegate.dart';
 import 'package:pokedex/src/services/pokemon_service.dart';
 import 'package:pokedex/src/theme/constants.dart';
 import 'package:pokedex/src/views/search/search_pokemon_page.dart';
@@ -41,12 +40,9 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    // final pokemonService = Provider.of<PokemonService>(context);
-
-    
 
     return Scaffold(
-        drawer: ClientNavigationDrawer(),
+        drawer: PokenixNavigationDrawer(),
         body: CustomScrollView(
           controller: scrollController,
           physics: BouncingScrollPhysics(),

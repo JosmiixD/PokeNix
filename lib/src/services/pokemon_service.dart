@@ -80,16 +80,16 @@ class PokemonService with ChangeNotifier {
 
   }
 
-  Future<dynamic> getPokemonSpeciesData( int id, String url ) async {
+  Future<dynamic> getPokemonSpeciesData( String speciesUrl, String typesUrl ) async {
 
     this.isLoading = true;
 
     try {
 
-      final speciesResponse = await Dio().get('${Environment.pokeApiUrl}pokemon-species/$id');
+      final speciesResponse = await Dio().get(speciesUrl);
       final PokemonSpeciesInfo pokemonSpeciesInfo = pokemonSpeciesInfoFromJson( jsonEncode(speciesResponse.data) );
 
-      final typesResponse = await Dio().get(url);
+      final typesResponse = await Dio().get(typesUrl);
       final PokemonTypeInfo pokemonTypeInfo = pokemonTypeInfoFromJson( jsonEncode(typesResponse.data) );
 
       final evolutionResponse = await Dio().get( pokemonSpeciesInfo.evolutionChain.url );

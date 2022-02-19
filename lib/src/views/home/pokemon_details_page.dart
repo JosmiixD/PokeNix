@@ -1,5 +1,4 @@
 import 'package:animate_do/animate_do.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
@@ -15,7 +14,6 @@ import 'package:pokedex/src/theme/constants.dart';
 import 'package:pokedex/src/widgets/components/general/pokenix_circular_progress_indicator.dart';
 import 'package:pokedex/src/widgets/components/pokedex/pokemon-details/pokemon_header.dart';
 import 'package:provider/provider.dart';
-import 'package:shimmer/shimmer.dart';
 
 class PokemonDetailsPage extends StatelessWidget {
   const PokemonDetailsPage({Key key, @required this.pokemon}) : super(key: key);
@@ -61,7 +59,7 @@ class _PokemonDetailsTabBarState extends State<PokemonDetailsTabBar>
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
       final pokemonService =
           Provider.of<PokemonService>(context, listen: false);
-      await pokemonService.getPokemonSpeciesData(widget.pokemon.id, widget.pokemon.types[0].type.url );
+      await pokemonService.getPokemonSpeciesData(widget.pokemon.species.url, widget.pokemon.types[0].type.url );
     });
   }
 
@@ -259,17 +257,25 @@ class EvolutionItem extends StatelessWidget {
                 'assets/images/svg/patterns/Pokeball.svg',
                 color: pokeNixTextGrey.withOpacity(0.05)
               ),
-              CachedNetworkImage(
-                fadeInDuration: Duration( milliseconds: 400 ),
-                key: UniqueKey(),
-                imageUrl: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/$id.png',
-                placeholder: (_, __) => Shimmer.fromColors(
-                    child: Image.asset('assets/images/png/25.png'),
-                    baseColor: pokeNixShimmerBaseColor,
-                    highlightColor: pokeNixShimmerHighlightColor),
-                fit: BoxFit.cover,
-                filterQuality: FilterQuality.none,
-              ),
+              FadeIn(
+                child: Image.asset(
+                  'assets/images/png/pokemon/$id.png',
+                  height: size.height * 0.20,
+                  fit: BoxFit.cover,
+                  filterQuality: FilterQuality.none,
+                ),
+              )
+              // CachedNetworkImage(
+              //   fadeInDuration: Duration( milliseconds: 400 ),
+              //   key: UniqueKey(),
+              //   imageUrl: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/$id.png',
+              //   placeholder: (_, __) => Shimmer.fromColors(
+              //       child: Image.asset('assets/images/png/25.png'),
+              //       baseColor: pokeNixShimmerBaseColor,
+              //       highlightColor: pokeNixShimmerHighlightColor),
+              //   fit: BoxFit.cover,
+              //   filterQuality: FilterQuality.none,
+              // ),
             ],
           ),
         ),
@@ -566,7 +572,7 @@ class AboutPokemonPage extends StatelessWidget {
           .replaceAll("\f", " ");
     }
 
-    return !pokemonService.isLoading
+    return (!pokemonService.isLoading && pokemonSpeciesInfo != null) 
         ? Scrollbar(
             radius: Radius.circular(20),
             thickness: 6.0,

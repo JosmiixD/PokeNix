@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:pokedex/src/global/global.dart';
 import 'package:pokedex/src/models/history/search.dart';
 import 'package:pokedex/src/models/pokemon_list.dart';
-import 'package:pokedex/src/services/pokemon_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HistoryService with ChangeNotifier {

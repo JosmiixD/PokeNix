@@ -5,10 +5,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
+import 'package:pokedex/src/env/environment.dart';
 import 'package:pokedex/src/models/history/search.dart';
+import 'package:pokedex/src/models/pokemon.dart';
 import 'package:pokedex/src/models/pokemon_list.dart';
 import 'package:pokedex/src/services/history_service.dart';
+import 'package:pokedex/src/services/pokemon_service.dart';
 import 'package:pokedex/src/theme/constants.dart';
+import 'package:pokedex/src/views/home/pokemon_details_page.dart';
 import 'package:pokedex/src/widgets/components/general/pokenix_custom_back_button.dart';
 import 'package:provider/provider.dart';
 
@@ -51,7 +55,7 @@ class SearchPokemonPage extends StatelessWidget {
             SizedBox( height: 10),
             Expanded(
               child: 
-                (historyService.isSearchActive && historyService.searchResults != null ) ?
+                (historyService.isSearchActive && historyService.searchResults.length > 0 ) ?
                 ListView.builder(
                 physics: BouncingScrollPhysics(),
                 itemCount: historyService.searchResults.length,
@@ -73,26 +77,46 @@ class SearchPokemonPage extends StatelessWidget {
                         )
                       ),
                       minLeadingWidth: 2.0,
+                      onTap: () async {
+
+                        historyService.searchResults.add(item);
+
+                        final url = '${Environment.pokeApiUrl}pokemon/${item.name}';
+                        final Pokemon pokemon = await Provider.of<PokemonService>(context, listen: false).getPokemon(url);
+                        Navigator.of(context).push(CupertinoPageRoute(builder: (_) => PokemonDetailsPage(pokemon: pokemon)));
+
+                      },
                     ),
                   );
                 },
               )
-              : ListView.builder(
-                physics: BouncingScrollPhysics(),
-                itemCount: historyService.searches.length,
-                itemBuilder: (BuildContext context, int index) {
+              : Container(
+                child:
+                  (historyService.searches.length > 0)
+                  ? ListView.builder(
+                    physics: BouncingScrollPhysics(),
+                    itemCount: historyService.searches.length,
+                    itemBuilder: (BuildContext context, int index) {
 
-                  final Search item = historyService.searches[index];
+                      final Search item = historyService.searches[index];
 
-                  return FadeIn(
-                    child: ListTile(
-                      contentPadding: EdgeInsets.zero,
-                      title: Text( item.query ),
-                      leading: Align( widthFactor: 1.0, alignment: Alignment.center ,child: Icon(Icons.schedule_rounded, size: 18, color: pokeNixTextBlack )),
-                      minLeadingWidth: 2.0,
-                    ),
-                  );
-                },
+                      return FadeIn(
+                        child: ListTile(
+                          contentPadding: EdgeInsets.zero,
+                          title: Text( item.query ),
+                          leading: Align( widthFactor: 1.0, alignment: Alignment.center ,child: Icon(Icons.schedule_rounded, size: 18, color: pokeNixTextBlack )),
+                          minLeadingWidth: 2.0,
+                          onTap: () async {
+                            final url = '${Environment.pokeApiUrl}pokemon/${item.query}';
+                            final Pokemon pokemon = await Provider.of<PokemonService>(context, listen: false).getPokemon(url);
+                            Navigator.of(context).push(CupertinoPageRoute(builder: (_) => PokemonDetailsPage(pokemon: pokemon)));
+                          },
+                        ),
+                      );
+                    },
+                  )
+                  : Center(child: Text('There is nothing here'))
+                
               ),
             ),
           ],
